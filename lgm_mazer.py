@@ -1,8 +1,8 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-#   Author: Jo?o S. O. Bueno
-#   Copyright: Jo?o 2010 -
+#   Author: João S. O. Bueno
+#   Copyright: João 2010 -
 #   Created at LibreGraphicsMeeting 2010, Brussels
 #
 #   This program is free software: you can redistribute it and/or modify
@@ -38,7 +38,7 @@ def init():
     pygame.init()
     if FULLSCREEN:
         SIZE = pygame.display.list_modes()[0]
-        VSIZE = SIZE[0]/32, SIZE[1]/24
+        VSIZE = SIZE[0] // 32, SIZE[1] // 24
         screen = pygame.display.set_mode(SIZE, pygame.FULLSCREEN)
     else:
         screen = pygame.display.set_mode(SIZE)
@@ -56,7 +56,7 @@ class Point(tuple):
         return 10000 * int(self[0]) + int(self[1])
 
 def builder(x, y, points, color, possible_directions, surface, path=None):
-    scale = (SIZE[0] / VSIZE[0], SIZE[1] / VSIZE[1])
+    scale = (SIZE[0] // VSIZE[0], SIZE[1] // VSIZE[1])
     current_point = Point((x,y))
     path = path if path is not None else []
     current_point, direction = builder_new_direction(possible_directions,
@@ -80,7 +80,7 @@ def builder(x, y, points, color, possible_directions, surface, path=None):
         can_create = yield new
 
 def builder_draw(surface, color, current_point, direction, scale):
-        correction = (WIDTH / 2) * direction
+        correction = (WIDTH // 2) * direction
         pygame.draw.line(surface, color,  current_point * scale,
                         (current_point + direction) * scale + correction,
                          WIDTH)
@@ -103,12 +103,12 @@ def builder_new_direction(possible_directions, current_point, points, path, star
 def maze(surface, color, possible_directions):
     name = "Thread %d: " % random.randrange(1000)
     points = set()
-    step = SIZE[0] / VSIZE[0]
+    step = SIZE[0] // VSIZE[0]
     threads = set()
     b = builder(random.randrange(VSIZE[0]), 
                 random.randrange(VSIZE[1]),
                 points, color, possible_directions, surface)
-    b.next()
+    next(b)
     threads.add(b)
     old = False
     while True:
@@ -125,7 +125,7 @@ def maze(surface, color, possible_directions):
                     new_thread = builder(new[0], new[1],
                                          points, color,
                                          possible_directions, surface, new[2])
-                    new_thread.next()
+                    next(new_thread)
                 except StopIteration:
                     new = False
             if len(threads) < MAX_THREADS and new:
@@ -156,7 +156,7 @@ def main(screen):
         to_die = set()
         for this_maze in mazes:
             try:
-                this_maze.next()
+                next(this_maze)
             except StopIteration:
                 to_die.add(this_maze)
         if flip_coin(CHANCE / 10.0):
